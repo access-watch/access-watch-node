@@ -1,0 +1,33 @@
+{
+  "name": "access-watch",
+  "version": "1.0.0",
+  "description": "Logging and analysing web traffic using the AccessWatch service.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js | faucet",
+    "lint": "eslint *.js",
+    "cover": "nyc --check-coverage npm test",
+    "docs": "jsdoc2md index.js > api.md"
+  },
+  "repository": "https://github.com/access-watch/access-watch-node",
+  "keywords": [
+    "accesswatch",
+    "access",
+    "watch"
+  ],
+  "author": "AccessWatch GmbH",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.74.0"
+  },
+  "devDependencies": {
+    "faucet": "0.0.1",
+    "nock": "^8.0.0",
+    "nyc": "^8.1.0",
+    "tape": "^4.6.0",
+    "eslint": "^3.3.0"
+  },
+  "optionalDependencies": {
+    "jsdoc-to-markdown": "^1.3.7"
+  }
+}
