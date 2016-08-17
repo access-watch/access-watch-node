@@ -113,8 +113,8 @@ class AccessWatch {
   }
 
   /**
-   * Make sure the apiBase and apiKey are correctly set up. Probably done every
-   * time a server launches
+   * Make sure the `apiBase` and `apiKey` are correctly set up. Probably done
+   * every time a server launches
    * @return {Promise} Rejects unless a 200 is returned from the api
    */
   hello() {

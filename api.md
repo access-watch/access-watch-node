@@ -12,7 +12,7 @@ Handles logging, caching and checking for blocked requets.
         * [.lookupSession(req, noCache)](#AccessWatch+lookupSession) ⇒ <code>Promise</code>
         * [.checkBlocked(req)](#AccessWatch+checkBlocked) ⇒ <code>Promise.&lt;boolean&gt;</code>
         * [.log(req, res)](#AccessWatch+log) ⇒ <code>Promise</code>
-        * [.requestIdentity(req)](#AccessWatch+requestIdentity) ⇒ <code>string</code>
+        * [.requestSignature(req)](#AccessWatch+requestSignature) ⇒ <code>string</code>
     * _static_
         * [.Cache](#AccessWatch.Cache)
             * [.get(id, callback)](#AccessWatch.Cache+get)
@@ -36,8 +36,8 @@ Handles logging, caching and checking for blocked requets.
 <a name="AccessWatch+hello"></a>
 
 ### accessWatch.hello() ⇒ <code>Promise</code>
-Make sure the apiBase and apiKey are correctly set up. Probably done every
-time a server launches
+Make sure the `apiBase` and `apiKey` are correctly set up. Probably done
+every time a server launches
 
 **Kind**: instance method of <code>[AccessWatch](#AccessWatch)</code>  
 **Returns**: <code>Promise</code> - Rejects unless a 200 is returned from the api  
@@ -56,8 +56,8 @@ Look up a Session from cache or api with a node request
 <a name="AccessWatch+checkBlocked"></a>
 
 ### accessWatch.checkBlocked(req) ⇒ <code>Promise.&lt;boolean&gt;</code>
-Check if a request should be blocked by checking for the requestIdentity in
-the cache.
+Check if a request should be blocked by checking for the requestSignature
+in the cache.
 NOTE: If its a cache miss, default will be `false` since we should never
 add extra latency to the response times or making it dependent on the
 access watch api service.
@@ -80,9 +80,9 @@ Send request and response data to AccessWatch API.
 | req | <code>http.IncomingMessage</code> | A raw node request |
 | res | <code>http.ServerResponse</code> | A raw node response |
 
-<a name="AccessWatch+requestIdentity"></a>
+<a name="AccessWatch+requestSignature"></a>
 
-### accessWatch.requestIdentity(req) ⇒ <code>string</code>
+### accessWatch.requestSignature(req) ⇒ <code>string</code>
 An identifier hash to associate a certain type of requests with a Session.
 Simply a combination of the address and some headers.
 
