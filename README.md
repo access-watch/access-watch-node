@@ -14,10 +14,12 @@ respectively.
 ## Usage ##
 
 ```
-  npm install --save access-watch
+  npm install --save access-watch-node
 ```
 
 For example code, see the referenced plugins mentioned above.
+
+## Reverse proxy ##
 
 If the node application is behind a reverse proxy, it should set forwarded headers which
 must specified to AccessWatch on instantiation. Typically the predefined

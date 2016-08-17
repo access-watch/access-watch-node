@@ -1,5 +1,5 @@
 {
-  "name": "access-watch",
+  "name": "access-watch-node",
   "version": "1.0.0",
   "description": "Logging and analysing web traffic using the AccessWatch service.",
   "main": "index.js",
@@ -16,7 +16,7 @@
     "access",
     "watch"
   ],
-  "author": "AccessWatch GmbH",
+  "author": "johannes@access.watch",
   "license": "MIT",
   "dependencies": {
     "request": "^2.74.0"
