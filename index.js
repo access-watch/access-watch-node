@@ -49,6 +49,17 @@ const request = promisify(require('request'));
 
 const API_BASE = 'https://access.watch/api/1.0';
 
+// Headers that we'll use to create a signature of a request
+const SIGNATURE_HEADERS = [
+  'user-agent',
+  'accept',
+  'accept-charset',
+  'accept-language',
+  'accept-encoding',
+  'from',
+  'dnt',
+];
+
 /**
  * If the server runs behind a reverse proxy such as nginx or haproxy,
  * http headers should provide info about the forwarded request. This maps
@@ -128,7 +139,7 @@ class AccessWatch {
    * @return {Promise}
    */
   lookupSession(req, noCache) {
-    const identity = this.requestIdentity(req);
+    const identity = this.requestSignature(req);
     let result = Promise.resolve(null);
 
     if (!noCache) {
@@ -169,8 +180,8 @@ class AccessWatch {
   }
 
   /**
-   * Check if a request should be blocked by checking for the requestIdentity in
-   * the cache.
+   * Check if a request should be blocked by checking for the requestSignature
+   * in the cache.
    * NOTE: If its a cache miss, default will be `false` since we should never
    * add extra latency to the response times or making it dependent on the
    * access watch api service.
@@ -179,7 +190,7 @@ class AccessWatch {
    * @return {Promise<boolean>}
    */
   checkBlocked(req) {
-    return this.cache.get(this.requestIdentity(req)).then(
+    return this.cache.get(this.requestSignature(req)).then(
       session => !!(session && session.blocked)
     ).catch(_ => Promise.resolve(false));
   }
@@ -238,18 +249,24 @@ class AccessWatch {
   * @param {http.IncomingMessage} req A raw node request
   * @return {string}
   */
-  requestIdentity(req) {
+  requestSignature(req) {
+    const sigHeaders = SIGNATURE_HEADERS.reduce((acc, header) => {
+      const h = req.headers[header];
+      if (h) {
+        acc[header] = h;
+      }
+      return acc;
+    }, {});
+
+    const sigAddress = getFwdHeader(this.fwdHeaders.address, req.headers) ||
+      req.socket.remoteAddress;
+
     return crypto
       .createHash('md5')
-      .update(
-        (getFwdHeader(this.fwdHeaders.address, req.headers) ||
-          req.socket.remoteAddress
-        ) + JSON.stringify(req.headers)
-      )
+      .update(sigAddress + JSON.stringify(sigHeaders))
       .digest('hex');
   }
 }
-
 
 /**
  * The standard headers that a reverse proxy should set.

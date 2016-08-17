@@ -280,13 +280,13 @@ test('log(req, res) logs a request and response', childTest => {
   });
 });
 
-test('requestIdentity(req) create identities of requests', childTest => {
+test('requestSignature(req) create identities of requests', childTest => {
   childTest.plan(2);
 
   childTest.test('direct req', t => {
     const req = {
       headers: {
-        host: 'access.watch'
+        'user-agent': '123'
       },
       socket: {
         remoteAddress: '1.2.3.4'
@@ -295,25 +295,31 @@ test('requestIdentity(req) create identities of requests', childTest => {
 
     const reqB = Object.assign({}, req, {
       headers: {
-        host: 'watch.access'
-      }
+        'user-agent': '123',
+        'dnt': 'test' // this should give a new signature
+      },
     });
 
     const reqC = Object.assign({}, req, {
+      headers: {
+        'host': 'access-watch', // this will not affect the signature
+        'user-agent': '123'
+      },
       url: '/123'
     });
 
     const aw = getTestInstance();
 
-    t.assert(aw.requestIdentity(req) !== aw.requestIdentity(reqB));
-    t.assert(aw.requestIdentity(req) === aw.requestIdentity(reqC));
+    t.assert(aw.requestSignature(req) !== aw.requestSignature(reqB));
+    t.assert(aw.requestSignature(req) === aw.requestSignature(reqC));
     t.end();
   });
 
   childTest.test('forwarded req', t => {
     const req = {
       headers: {
-        host: 'access.watch',
+        'user-agent': '123',
+        'host': 'access.watch',
         'x-forwarded-for': '1.2.3.4',
       },
       socket: {
@@ -323,7 +329,6 @@ test('requestIdentity(req) create identities of requests', childTest => {
 
     const reqB = Object.assign({}, req, {
       headers: {
-        host: 'watch.access',
         'x-forwarded-for': '1.2.3.4',
       }
     });
@@ -339,8 +344,8 @@ test('requestIdentity(req) create identities of requests', childTest => {
       fwdHeaders: AccessWatch.fwdHeaders
     });
 
-    t.assert(aw.requestIdentity(req) !== aw.requestIdentity(reqB));
-    t.assert(aw.requestIdentity(req) === aw.requestIdentity(reqC));
+    t.assert(aw.requestSignature(req) !== aw.requestSignature(reqB));
+    t.assert(aw.requestSignature(req) === aw.requestSignature(reqC));
     t.end();
 
   });
