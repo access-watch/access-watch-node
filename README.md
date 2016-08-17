@@ -1,5 +1,7 @@
 Access Watch Node library
 -------------------------
+[![Build Status](https://travis-ci.org/access-watch/access-watch-node.svg?branch=master)](https://travis-ci.org/access-watch/access-watch-node)
+[![Coverage Status](https://coveralls.io/repos/github/access-watch/access-watch-node/badge.svg?branch=master)](https://coveralls.io/github/access-watch/access-watch-node?branch=master)
 
 A nodejs implementation for logging and analysing web traffic using the
 AccessWatch service. This library provides the utilities for communication with
