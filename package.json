@@ -28,8 +28,5 @@
     "nock": "^8.0.0",
     "nyc": "^8.1.0",
     "tape": "^4.6.0"
-  },
-  "optionalDependencies": {
-    "jsdoc-to-markdown": "^1.3.7"
   }
 }
