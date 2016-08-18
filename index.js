@@ -5,13 +5,12 @@
  */
 
 /**
- * @interface AccessWatch.Cache
  * The AccessWatch instance requires a cache that implements the functions
  * `get`, `set`, and `drop` or `del`. The module has been built with
  * catbox and node-cache-manager in mind. Easiest is thus to use a
  * `Catbox.Policy` or cache-manager interface but any kind of cache
  * that implements this interface will be do.
- *
+ * @interface AccessWatch.Cache
  * @see https://github.com/hapijs/catbox#api-1
  * @see https://github.com/BryanDonovan/node-cache-manager
  */
@@ -269,7 +268,9 @@ class AccessWatch {
 }
 
 /**
- * The standard headers that a reverse proxy should set.
+ * The standard headers that a reverse proxy should set. This means that
+ * forwarded request should set the headers `X-Forwarded-For`,
+ * `X-Forwarded-Proto`, and the first entry of `X-Forwarded-For`
  *
  * @type {AccessWatch.ForwardHeaders}
  */
