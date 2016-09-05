@@ -41,10 +41,8 @@
  * @param {function} callback node style callback
  */
 
-const promisify = require('./promisify');
-
 const crypto = require('crypto');
-const request = promisify(require('request'));
+const request = require('request-promise');
 
 const API_BASE = 'https://access.watch/api/1.0';
 

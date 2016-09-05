@@ -19,7 +19,7 @@
   "author": "johannes@access.watch",
   "license": "MIT",
   "dependencies": {
-    "request": "^2.74.0"
+    "request-promise": "^4.1.1"
   },
   "devDependencies": {
     "coveralls": "^2.11.12",
