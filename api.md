@@ -30,6 +30,7 @@ Handles logging, caching and checking for blocked requets.
 | config | <code>object</code> |  |
 | config.apiKey | <code>string</code> | AccessWatch api key |
 | config.cache | <code>[Cache](#AccessWatch.Cache)</code> | A cache for storing sessions. |
+| [config.headerBlacklist] | <code>Array.&lt;String&gt;</code> | A list of headers that must never be sent to the AccessWatch service. By default Cookie and Authorization are omitted. The headers are case insensitive. |
 | [config.fwdHeaders] | <code>AccessWatch.ForwardHeaders</code> | Specify custom proxy header names. It is necessary to set this if the server is behind a reverse proxy. Use pass a custom object or the predefined `AccessWatch.fwdHeaders` which should sufficient for most cases. |
 | [config.apiBase] | <code>string</code> | A custom api base url, may be useful for testing and debugging. |
 
@@ -58,6 +59,7 @@ Look up a Session from cache or api with a node request
 ### accessWatch.checkBlocked(req) ⇒ <code>Promise.&lt;boolean&gt;</code>
 Check if a request should be blocked by checking for the requestSignature
 in the cache.
+
 NOTE: If its a cache miss, default will be `false` since we should never
 add extra latency to the response times or making it dependent on the
 access watch api service.
