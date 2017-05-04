@@ -19,7 +19,8 @@
   "author": "johannes@access.watch",
   "license": "MIT",
   "dependencies": {
-    "request-promise": "^4.1.1"
+    "lodash.omit": "^4.5.0",
+    "request": "^2.79.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.12",

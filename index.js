@@ -42,7 +42,9 @@
  */
 
 const crypto = require('crypto');
-const request = require('request-promise');
+const omit = require('lodash.omit');
+const promisify = require('./promisify');
+const request = promisify(require('request'));
 
 const API_BASE = 'https://access.watch/api/1.0';
 
@@ -82,6 +84,9 @@ class AccessWatch {
    * @param {object} config
    * @param {string} config.apiKey AccessWatch api key
    * @param {AccessWatch.Cache} config.cache A cache for storing sessions.
+   * @param {Array<String>} [config.headerBlacklist] A list of headers that must
+   * never be sent to the AccessWatch service. By default Cookie and
+   * Authorization are omitted. The headers are case insensitive.
    * @param {AccessWatch.ForwardHeaders} [config.fwdHeaders] Specify custom
    * proxy header names. It is necessary to set this if the server is behind a
    * reverse proxy. Use pass a custom object or the predefined
@@ -101,6 +106,8 @@ class AccessWatch {
     this.apiKey = config.apiKey;
     this.apiBase = config.apiBase || API_BASE;
     this.fwdHeaders = config.fwdHeaders || {};
+    this.headerBlacklist = (config.headerBlacklist || ['Cookie', 'Authorization'])
+      .map(header => header.toLowerCase()); // we always keep headers lowercase!
 
     this.cache = {
       get: promisify(config.cache.get, config.cache),
@@ -179,6 +186,7 @@ class AccessWatch {
   /**
    * Check if a request should be blocked by checking for the requestSignature
    * in the cache.
+   *
    * NOTE: If its a cache miss, default will be `false` since we should never
    * add extra latency to the response times or making it dependent on the
    * access watch api service.
@@ -230,7 +238,7 @@ class AccessWatch {
           // 80 or 443.
           port: (forwarded.host || req.headers['host']).split(':')[1],
           url: req.url,
-          headers: req.headers
+          headers: omit(req.headers, this.headerBlacklist)
         },
         response: {
           status: res.statusCode

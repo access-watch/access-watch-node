@@ -216,14 +216,15 @@ test('lookupSession(req, noCache) find a session. cache and api', childTest => {
 });
 
 test('log(req, res) logs a request and response', childTest => {
-  childTest.plan(2);
+  childTest.plan(3);
   const fakeReq = {
     httpVersion: '999',
     headers: {
       host: 'localhost',
       'x-forwarded-for': '1.2.3.4, 2.2.2.2, 3.3.3.3',
       'x-forwarded-proto': 'https',
-      'x-forwarded-host': 'access.watch'
+      'x-forwarded-host': 'access.watch',
+      'cookie': 'dont include me plz'
     },
     socket: {
       remoteAddress: '127.0.0.1',
@@ -248,9 +249,48 @@ test('log(req, res) logs a request and response', childTest => {
         t.assert(body.request.scheme === 'https');
         t.assert(body.request.host === 'access.watch');
         t.assert(body.request.url === '/some/url');
-        t.same(body.request.headers, fakeReq.headers);
+        t.assert(body.request.headers['cookie'] === undefined);
+        t.same(
+          Object.keys(body.request.headers).length,
+          Object.keys(fakeReq.headers).length - 1 // cookie header was omitted
+        );
         t.assert(body.response.status === 123);
         return 200;
+      });
+
+    return aw.log(fakeReq, fakeRes)
+      .then(_ => t.end())
+      .catch(t.fail);
+  });
+
+  childTest.test('it uses headerBlacklist', t => {
+    const fakeReq = {
+      httpVersion: '999',
+      headers: {
+        host: 'localhost',
+        one: '1',
+        two: '1',
+        three: '1',
+        cookie: 'i can be included'
+      },
+      socket: {
+        remoteAddress: '127.0.0.1',
+        encrypted: false
+      },
+      url: '/some/url'
+    };
+
+    const aw = getTestInstance({
+      headerBlacklist: ['one', 'TWO', 'tHree']
+    });
+
+    nock(aw.apiBase)
+      .post('/log')
+      .reply((uri, body) => {
+        t.assert(body.request.headers['one'] === undefined);
+        t.assert(body.request.headers['three'] === undefined);
+        t.assert(body.request.headers['three'] === undefined);
+        t.assert(body.request.headers['cookie'] === 'i can be included');
       });
 
     return aw.log(fakeReq, fakeRes)
@@ -269,7 +309,11 @@ test('log(req, res) logs a request and response', childTest => {
         t.assert(body.request.scheme === 'http');
         t.assert(body.request.host === 'localhost');
         t.assert(body.request.url === '/some/url');
-        t.same(body.request.headers, fakeReq.headers);
+        t.assert(body.request.headers['cookie'] === undefined);
+        t.same(
+          Object.keys(body.request.headers).length,
+          Object.keys(fakeReq.headers).length - 1
+        );
         t.assert(body.response.status === 123);
         return 200;
       });
